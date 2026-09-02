@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: querywise_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: querywise_demo
+    ports:
+      - "5432:5432"
+    volumes:
+      - querywise_pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/2_seed.sql
+      - ./database/app_schema.sql:/docker-entrypoint-initdb.d/3_app_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    container_name: querywise_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      TARGET_DB_HOST: db
+      TARGET_DB_PORT: 5432
+      TARGET_DB_NAME: querywise_demo
+      TARGET_DB_USER: postgres
+      TARGET_DB_PASSWORD: postgres
+      APP_DB_HOST: db
+      APP_DB_PORT: 5432
+      APP_DB_NAME: querywise_demo
+      APP_DB_USER: postgres
+      APP_DB_PASSWORD: postgres
+      SLOW_QUERY_THRESHOLD_MS: 500
+      FRONTEND_ORIGIN: http://localhost:5173
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build: ./frontend
+    container_name: querywise_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      VITE_API_URL: http://localhost:8000
+    ports:
+      - "5173:5173"
+
+volumes:
+  querywise_pgdata:
