@@ -83,7 +83,7 @@ Plan Summary: {json.dumps(plan_summary)}
 Keep the explanation concise, actionable, and easy to understand."""
 
         response = client.chat.completions.create(
-            model="meta-llama/llama-3.1-8b-instruct:free",
+            model="meta-llama/llama-3.1-8b-instruct",
             messages=[{"role": "user", "content": prompt}],
         )
         return response.choices[0].message.content
