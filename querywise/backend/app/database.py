@@ -39,8 +39,11 @@ APP_DB_HOST = os.getenv("APP_DB_HOST", "localhost")
 APP_DB_PORT = os.getenv("APP_DB_PORT", "5432")
 APP_DB_NAME = os.getenv("APP_DB_NAME", "querywise_demo")
 
+import urllib.parse
+APP_DB_PASSWORD_ENCODED = urllib.parse.quote_plus(APP_DB_PASSWORD)
+
 APP_DATABASE_URL = (
-    f"postgresql+psycopg2://{APP_DB_USER}:{APP_DB_PASSWORD}"
+    f"postgresql+psycopg2://{APP_DB_USER}:{APP_DB_PASSWORD_ENCODED}"
     f"@{APP_DB_HOST}:{APP_DB_PORT}/{APP_DB_NAME}"
 )
 

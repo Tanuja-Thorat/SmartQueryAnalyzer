@@ -45,6 +45,8 @@ class QueryAnalysis(Base):
     issues = Column(JSON, default=list)         # list[str]
     plan_tree = Column(JSON, default=dict)       # simplified plan tree for UI
     raw_plan = Column(JSON, default=dict)         # raw EXPLAIN JSON (debug)
+    ai_explanation = Column(Text, nullable=True)  # AI-generated explanation of the plan
+
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

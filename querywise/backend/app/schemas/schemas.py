@@ -52,6 +52,7 @@ class AnalyzeResponse(BaseModel):
     scan_type: Optional[str] = None
     issues: List[str]
     plan_tree: Optional[PlanNodeOut] = None
+    ai_explanation: Optional[str] = None
     recommendations: List[IndexRecommendationOut]
 
 
@@ -102,6 +103,7 @@ class HistoryDetail(HistoryItem):
     actual_rows: Optional[int]
     scan_type: Optional[str]
     plan_tree: Optional[Dict[str, Any]]
+    ai_explanation: Optional[str] = None
     recommendations: List[IndexRecommendationOut]
 
 

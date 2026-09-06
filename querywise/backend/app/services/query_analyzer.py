@@ -60,6 +60,38 @@ def run_explain(query_text: str, run_analyze: bool = False) -> Dict:
         raise QueryAnalysisError("An unexpected error occurred while analyzing your query.")
 
 
+import os
+import json
+from openai import OpenAI
+
+def generate_ai_explanation(query: str, issues: list, plan_summary: dict) -> str:
+    provider = os.getenv("AI_PROVIDER")
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    if not api_key or provider != "openrouter":
+        return None
+
+    try:
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=api_key,
+        )
+        prompt = f"""You are a database performance expert. Explain this query execution plan to a developer in simple terms.
+Query: {query}
+Issues found: {', '.join(issues) if issues else 'None'}
+Plan Summary: {json.dumps(plan_summary)}
+
+Keep the explanation concise, actionable, and easy to understand."""
+
+        response = client.chat.completions.create(
+            model="google/gemini-2.5-flash",
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"Error generating AI explanation: {e}")
+        return None
+
+
 def analyze_query(raw_query: str, run_analyze: bool = False) -> Dict:
     """
     Full analysis pipeline. Returns a dict ready to be persisted and
@@ -106,6 +138,9 @@ def analyze_query(raw_query: str, run_analyze: bool = False) -> Dict:
     except Exception:
         primary_table = None
 
+    # 8. Generate AI Explanation
+    ai_explanation = generate_ai_explanation(clean_query, issues, {"total_cost": summary["total_cost"], "startup_cost": summary["startup_cost"], "scan_type": summary["scan_type"]})
+
     return {
         "clean_query": clean_query,
         "query_hash": query_hash(clean_query),
@@ -123,4 +158,6 @@ def analyze_query(raw_query: str, run_analyze: bool = False) -> Dict:
         "plan_tree": summary["plan_tree"],
         "raw_plan": explain_json,
         "recommendations": recommendations,
+        "ai_explanation": ai_explanation,
     }
+
