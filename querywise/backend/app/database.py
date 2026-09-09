@@ -14,6 +14,7 @@ QueryWise talks to TWO databases:
 import os
 import contextlib
 from pathlib import Path
+from urllib.parse import quote_plus
 
 import psycopg2
 from psycopg2 import sql
@@ -40,7 +41,7 @@ APP_DB_PORT = os.getenv("APP_DB_PORT", "5432")
 APP_DB_NAME = os.getenv("APP_DB_NAME", "querywise_demo")
 
 APP_DATABASE_URL = (
-    f"postgresql+psycopg2://{APP_DB_USER}:{APP_DB_PASSWORD}"
+    f"postgresql+psycopg2://{APP_DB_USER}:{quote_plus(APP_DB_PASSWORD)}"
     f"@{APP_DB_HOST}:{APP_DB_PORT}/{APP_DB_NAME}"
 )
 
