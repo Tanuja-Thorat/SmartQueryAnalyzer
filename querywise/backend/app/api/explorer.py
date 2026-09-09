@@ -31,3 +31,16 @@ def table_detail(table_name: str):
     if detail is None:
         raise HTTPException(status_code=404, detail=f"Table '{table_name}' was not found in the database.")
     return {"success": True, **detail}
+
+
+@router.get("/schema")
+def get_schema():
+    """Returns the full schema (all tables, columns, keys) for ER diagrams."""
+    try:
+        schema = db_explorer.get_full_schema()
+    except Exception:
+        raise HTTPException(
+            status_code=503,
+            detail="Could not connect to the target database. Check your database is running and .env is configured correctly.",
+        )
+    return {"success": True, "schema": schema}
