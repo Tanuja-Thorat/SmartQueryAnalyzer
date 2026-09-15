@@ -21,3 +21,19 @@ Thumbs.db
 # Editors
 .vscode/
 .idea/
+
+# Confidential / Secrets
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+
+# Database / Logs
+*.sqlite
+*.sqlite3
+*.log
+
+# Misc
+.pytest_cache/
+coverage/

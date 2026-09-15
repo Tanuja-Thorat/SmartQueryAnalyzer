@@ -102,4 +102,13 @@ export async function getExplorerTableDetail(tableName) {
   }
 }
 
+export async function getExplorerSchema() {
+  try {
+    const { data } = await api.get('/api/explorer/schema')
+    return data
+  } catch (err) {
+    throw friendlyError(err)
+  }
+}
+
 export default api
