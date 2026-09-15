@@ -3,6 +3,8 @@ import { Table2, KeyRound, Link2, ListTree } from 'lucide-react'
 import { getExplorerTables, getExplorerTableDetail } from '../services/api.js'
 import Card, { StatCard } from '../components/Card.jsx'
 import { LoadingSpinner, EmptyState, ErrorBanner } from '../components/Feedback.jsx'
+import ERDiagram from '../components/ERDiagram.jsx'
+import { getExplorerSchema } from '../services/api.js'
 
 export default function DatabaseExplorer() {
   const [tables, setTables] = useState([])
@@ -12,6 +14,8 @@ export default function DatabaseExplorer() {
   const [detail, setDetail] = useState(null)
   const [detailLoading, setDetailLoading] = useState(false)
   const [detailError, setDetailError] = useState('')
+  const [viewMode, setViewMode] = useState('list') // 'list' or 'diagram'
+  const [fullSchema, setFullSchema] = useState(null)
 
   useEffect(() => {
     loadTables()
@@ -32,6 +36,22 @@ export default function DatabaseExplorer() {
       setLoading(false)
     }
   }
+
+  async function loadSchema() {
+    if (fullSchema) return;
+    try {
+      const data = await getExplorerSchema()
+      setFullSchema(data.schema)
+    } catch (err) {
+      setError(err.message)
+    }
+  }
+
+  useEffect(() => {
+    if (viewMode === 'diagram') {
+      loadSchema()
+    }
+  }, [viewMode])
 
   async function selectTable(tableName) {
     setSelected(tableName)
@@ -59,6 +79,29 @@ export default function DatabaseExplorer() {
         </p>
       </div>
 
+      <div className="flex border-b border-slate-200">
+        <button
+          onClick={() => setViewMode('list')}
+          className={`pb-2 px-4 text-sm font-medium border-b-2 transition-colors ${
+            viewMode === 'list'
+              ? 'border-brand-600 text-brand-600'
+              : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+          }`}
+        >
+          Table List
+        </button>
+        <button
+          onClick={() => setViewMode('diagram')}
+          className={`pb-2 px-4 text-sm font-medium border-b-2 transition-colors ${
+            viewMode === 'diagram'
+              ? 'border-brand-600 text-brand-600'
+              : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
+          }`}
+        >
+          ER Diagram
+        </button>
+      </div>
+
       <ErrorBanner message={error} />
 
       {loading ? (
@@ -78,7 +121,16 @@ export default function DatabaseExplorer() {
             <StatCard label="Total Rows (all tables)" value={totalRows.toLocaleString()} icon={ListTree} tone="success" />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {viewMode === 'diagram' ? (
+            <Card className="p-1">
+              {!fullSchema ? (
+                <LoadingSpinner label="Generating diagram..." />
+              ) : (
+                <ERDiagram schema={fullSchema} />
+              )}
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <Card title="Tables" className="lg:col-span-1">
               <div className="space-y-1 max-h-[520px] overflow-y-auto">
                 {tables.map((t) => (
@@ -163,6 +215,7 @@ export default function DatabaseExplorer() {
               )}
             </div>
           </div>
+          )}
         </>
       )}
     </div>

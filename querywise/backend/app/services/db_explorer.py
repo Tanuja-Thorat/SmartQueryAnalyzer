@@ -153,3 +153,17 @@ def get_table_detail(table_name: str) -> Optional[Dict]:
         "foreign_keys": foreign_keys,
         "indexes": indexes,
     }
+
+
+def get_full_schema() -> List[Dict]:
+    """
+    Returns full detail for every valid table in the target database.
+    Useful for building a complete ER diagram.
+    """
+    tables = get_table_names()
+    schema = []
+    for table in tables:
+        detail = get_table_detail(table)
+        if detail:
+            schema.append(detail)
+    return schema

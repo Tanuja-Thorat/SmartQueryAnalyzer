@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.database import Base, engine
-from app.api import analyze, history, dashboard, recommendations
+from app.api import analyze, history, dashboard, recommendations, explorer
 from app.scheduler import start_scheduler
 
 
@@ -125,6 +125,7 @@ app.include_router(analyze.router)
 app.include_router(history.router)
 app.include_router(dashboard.router)
 app.include_router(recommendations.router)
+app.include_router(explorer.router)
 
 
 # ============================================================

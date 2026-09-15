@@ -41,6 +41,7 @@ def analyze(payload: AnalyzeRequest, db: Session = Depends(get_db)):
         issues=result["issues"],
         plan_tree=result["plan_tree"],
         raw_plan=result["raw_plan"],
+        ai_explanation=result["ai_explanation"],
     )
     db.add(analysis_row)
     db.flush()
@@ -86,4 +87,5 @@ def analyze(payload: AnalyzeRequest, db: Session = Depends(get_db)):
             }
             for r in result["recommendations"]
         ],
+        ai_explanation=result["ai_explanation"],
     )

@@ -86,4 +86,5 @@ def get_history_detail(analysis_id: int, db: Session = Depends(get_db)):
             }
             for r in row.recommendations
         ],
+        ai_explanation=row.ai_explanation,
     )

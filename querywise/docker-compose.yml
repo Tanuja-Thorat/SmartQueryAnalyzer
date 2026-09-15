@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: Shivam10@162006
       POSTGRES_DB: querywise_demo
     ports:
       - "5432:5432"
@@ -34,12 +34,12 @@ services:
       TARGET_DB_PORT: 5432
       TARGET_DB_NAME: querywise_demo
       TARGET_DB_USER: postgres
-      TARGET_DB_PASSWORD: postgres
+      TARGET_DB_PASSWORD: Shivam10@162006
       APP_DB_HOST: db
       APP_DB_PORT: 5432
       APP_DB_NAME: querywise_demo
       APP_DB_USER: postgres
-      APP_DB_PASSWORD: postgres
+      APP_DB_PASSWORD: Shivam10@162006
       SLOW_QUERY_THRESHOLD_MS: 500
       FRONTEND_ORIGIN: http://localhost:5173
     ports:
